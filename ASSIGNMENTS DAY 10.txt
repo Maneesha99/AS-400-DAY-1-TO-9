@@ -1,0 +1,58 @@
+								ASSIGNMENTS-DAY 10	
+
+1.Program to display screen which accepts dept code and then copies employee of selected dept only to another file with same record format
+
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                               DEPTASSNR 
+ FMT FX FFilename++IPEASF.....L.....A.Device+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 FEMPLF6    IF   E           K DISK                                      
+0002.00 FEMP1      O    E           K DISK                                      
+0003.00 FDEPTASSND CF   E             WORKSTN                                                       
+0005.00 DQDEPT            S              2P 0 INZ(30)                                                  
+0007.00 C                   EXFMT     ASSNSCR                                                         
+0009.00 C     QDEPT         SETLL     EMPREC                                    
+0010.00 C     QDEPT         READE     EMPREC                                    
+0011.00 C                   DOW       NOT %EOF                                                 
+0013.00 C                   WRITE     EMPREC1                                   
+0014.00 C     QDEPT         READE     EMPREC                                                    
+0016.00 C                   ENDDO                                                
+0017.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data ****************************************  
+
+2.Program to display all records to another PF in which odd row and even row are in different colours
+                                                                               
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                  ASSNGR 
+ FMT FX FFilename++IPEASF.....L.....A.Device+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 FEMPMAIN   IF   E           K DISK                                      
+0002.00 FASSNGD    CF   E             WORKSTN SFILE(ASSNGSFL:RRN)               
+0003.00 DRRN              S              3P 0 INZ(*ZEROS)                       
+0004.00 C* CLEAR SUBFILE                                                        
+0005.00 C                   EVAL      *IN73=*ON                                 
+0006.00 C                   WRITE     ASSNGCTL                                  
+0007.00 C                   EVAL      RRN=0                                     
+0008.00 C                   EVAL      *IN73=*OFF                                
+0009.00 C* FILL SUBFILE                                                         
+0010.00 C     *LOVAL        SETLL     EMPREC                                    
+0011.00 C                   READ      EMPREC                                    
+0012.00 C                   DOW       NOT %EOF                                  
+0013.00 C                   MOVEA     '00'          *IN(41)                     
+0014.00 C                   IF        %REM(RRN:2)=0                             
+0015.00 C                   EVAL      *IN41=*ON                                 
+0016.00 C                   ELSE                                                
+0017.00 C                   EVAL      *IN42=*ON                                 
+0018.00 C                   ENDIF                                               
+0019.00 C                   EVAL      RRN+=1                                    
+0020.00 C                   WRITE     ASSNGSFL                                  
+0021.00 C                   READ      EMPREC                                    
+0022.00 C                   ENDDO                                               
+0023.00 C                   EVAL      *IN71=*ON                                 
+0024.00 C                   EVAL      *IN72=*ON                                 
+0025.00 C                   DOW       NOT *IN03                                 
+0026.00 C                   WRITE     FOOTER                                    
+0027.00 C                   EXFMT     ASSNGCTL                                  
+0028.00 C                   ENDDO                                               
+0029.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data ****************************************                                              
