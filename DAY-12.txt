@@ -1,0 +1,179 @@
+1.Program to get the age in days and use ADDDUR and SUBDUR to current date.
+
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                               WITHDATER 
+ FMT H  HKeywords++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 HDATFMT(*EUR)                                                           
+0002.00 DTODAY            S               D   DATFMT(*EUR) INZ(*SYS)            
+0003.00 DMANEESHA         S               D   DATFMT(*EUR) INZ(D'13.05.1999')   
+0004.00 DAGEYEAR          S              3P 0                                   
+0005.00 DAGEDAYS          S              5P 0                                   
+0006.00 DDT               S               D                                     
+0007.00 C                   EVAL      AGEYEAR=%DIFF(TODAY:MANEESHA:*Y)          
+0008.00 C                   EVAL      AGEDAYS=%DIFF(TODAY:MANEESHA:*D)          
+0009.00 C     AGEYEAR       DSPLY                                               
+0010.00 C     AGEDAYS       DSPLY                                               
+0011.00 C     TODAY         ADDDUR    90:*D         DT                          
+0012.00 C     DT            DSPLY                                               
+0013.00 C     TODAY         SUBDUR    5:*D          DT                          
+0014.00 C     DT            DSPLY                                               
+0015.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data **************************************** 
+
+2.Program to get familiarise built in functions for numeric conversion
+  Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC
+ SEU==>                                                              WITHTYPESR
+ FMT D  DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords+++++++++++++++++++++++++
+        *************** Beginning of data *************************************
+0001.00 DCH               S              8A   INZ('12345.67')                  
+0002.00 DPK               S              7P 0                                  
+0003.00 DIN               S              5I 0                                  
+0004.00 DUN               S              5U 0                                  
+0005.00 DFL               S              4F                                    
+0006.00 C                   EVAL      PK=%DEC(CH:7:2)                          
+0007.00 C** %DEC FUNC CONVERTS ANY NUMERIC & CHAR TYPE TO PACKED DECIMAL       
+0008.00 C     PK            DSPLY                                              
+0009.00 C                   EVAL      PK=%DECH(CH:7:0)                         
+0010.00 C     PK            DSPLY                                              
+0011.00 C                   EVAL      IN=%INT(CH)                              
+0012.00 C     IN            DSPLY                                              
+0013.00 C                   EVAL      IN=%INTH(CH)                             
+0014.00 C     IN            DSPLY                                              
+0015.00 C                   EVAL      FL=%FLOAT(CH)                            
+0016.00 C     FL            DSPLY                                              
+0017.00 C                   EVAL      UN=%UNS(CH)                               
+0018.00 C     UN            DSPLY                                               
+0019.00 C                   EVAL      UN=%UNSH(CH)                              
+0020.00 C     UN            DSPLY                                               
+0021.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data ****************************************
+
+3.Program to get familiarise built in string  functions    
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                WITHSTRR 
+ FMT D  DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 DITEM             S              8A   INZ('COMPUTER')                   
+0002.00 DSTR              S              3A   INZ('XYZ')                        
+0003.00 DNEWITEM          S             10A                                     
+0004.00 DM                S              8A                                     
+0005.00 DO                S              1P 0                                   
+0006.00 DLWR              C                   CONST('abcdefghijklmnopqrstuvwxyz 
+0007.00 DUPR              C                   CONST('ABCDEFGHIJKLMNOPQRSTUVWXYZ 
+0008.00 DSTR1             S              9A   INZ('MALAYALAM')                  
+0009.00 DSTR2             S              4A   INZ('ALAM')                       
+0010.00 C                   EVAL      NEWITEM=%REPLACE(STR:ITEM:4:3)            
+0011.00 C     NEWITEM       DSPLY                                               
+0012.00 C                   EVAL      NEWITEM=%XLATE(UPR:LWR:ITEM)              
+0013.00 C     NEWITEM       DSPLY                                               
+0014.00 C                   EVAL      NEWITEM=%SUBST(ITEM:4:3)                  
+0015.00 C     NEWITEM       DSPLY                                               
+0016.00 C                   EVAL      O=%SCAN(STR2:STR1)   
+0017.00 C     O             DSPLY                                               
+0018.00 C                   IF        O>0                                       
+0019.00 C                   EVAL      M='FOUND'                                 
+0020.00 C                   ELSE                                                
+0021.00 C                   EVAL      M='NOT FOUND'                             
+0022.00 C                   ENDIF                                               
+0023.00 C     M             DSPLY                                               
+0024.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data **************************************** 
+   
+4.Write a program to familiarise with pre runtime array    
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                              PRERUNARYR 
+ FMT F  FFilename++IPEASFRlen+LKlen+AIDevice+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 FSTORE     IT   F   33        DISK                                      
+0002.00 DSTOREARY         S             33A   DIM(5) FROMFILE(STORE) PERRCD(1)  
+0003.00 D*** DATA STRUCTURE IS COLLETION OF VARIOUS TYPES OF DATA ITEMS         
+0004.00 D*** DATA ITEMS IN DS ARE CALLED AS SUBFILES                            
+0005.00 D*** DS DOES NOT HAVE DATA TYPE/LNGTH                                   
+0006.00 D*** SUBFIELDS DECLARATION TYPE IS BLANK                                
+0007.00 DSTOREDS          DS                                                    
+0008.00 DIC                              6A                                     
+0009.00 DNM                             20A                                     
+0010.00 DPC                              7S 2                                   
+0011.00 C                   MOVE      STOREARY(3)   STOREDS                     
+0012.00 C     IC            DSPLY                                               
+0013.00 C     NM            DSPLY                                               
+0014.00 C     PC            DSPLY                                               
+0015.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data **************************************** 
+
+5.Write a program to update the data in a PF without using STRDFU   
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                              PRERUNAR1R 
+ FMT F  FFilename++IPEASFRlen+LKlen+AIDevice+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 FSTORE     CT   F   33        DISK                                      
+0002.00 DSTOREARY         S             33A   DIM(5) FROMFILE(STORE) PERRCD(1)  
+0003.00 D                                     TOFILE(STORE)                     
+0004.00 D*** DATA STRUCTURE IS COLLETION OF VARIOUS TYPES OF DATA ITEMS         
+0005.00 D*** DATA ITEMS IN DS ARE CALLED AS SUBFILES                            
+0006.00 D*** DS DOES NOT HAVE DATA TYPE/LNGTH                                   
+0007.00 D*** SUBFIELDS DECLARATION TYPE IS BLANK                                
+0008.00 DSTOREDS          DS                                                    
+0009.00 DIC                              6A                                     
+0010.00 DNM                             20A                                     
+0011.00 DPC                              7S 2                                   
+0012.00 C* MOVING 1 ELEMENT OF ARRAY TO DS                                      
+0013.00 C* IT GETS SPLITTED INTO SUBFIELD                                       
+0014.00 C                   MOVE      STOREARY(3)   STOREDS                     
+0015.00 C     IC            DSPLY                                               
+0016.00 C     NM            DSPLY                                               
+0017.00 C     PC            DSPLY                                               
+0018.00 C                   EVAL      NM='LAPTOP'                               
+0019.00 C                   MOVE      STOREDS       STOREARY(3)                 
+0020.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data **************************************** 
+
+6.Write a RPGLE program to generate a report layout of total salary of each department
+
+and grand total of all salaries from each dept and also find the maximum salary.
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                DEPTSALR 
+ FMT *   *. 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7 ...+. 
+        *************** Beginning of data ************************************* 
+0001.00 F** GROUP REPORT ON SALARY ......MAX, MIN ETC                           
+0002.00 FEMPLF6    IF   E           K DISK                                      
+0003.00 FDEPTSALP  O    E             PRINTER OFLIND(*IN95)                     
+0004.00 C                   WRITE     HEAD1                                     
+0005.00 C                   WRITE     HEAD2                                     
+0006.00 C     *LOVAL        SETLL     EMPREC                                    
+0007.00 C                   READ      EMPREC                                    
+0008.00 C                   EVAL      TMPDEPT=DEPT                              
+0009.00 C                   EVAL      MAXSAL=SALARY                             
+0010.00 C                   EVAL      GRNDMAX=SALARY                            
+0011.00 C** STORE 1ST EMP DEPT CODE IN VARIABLE & COMPARE IT WITH NEXT ONWARD   
+0012.00 C** WHEN NON-EQUAL VALUE FOUND THE CURRENT GROUP IS OVER                
+0013.00 C                   DOW       NOT %EOF                                  
+0014.00 C                   EVAL      TOTSAL+=SALARY                            
+0015.00 C                   WRITE     DETAIL                                    
+0016.00 C   95              WRITE     HEAD1                                     
+0017.00 C   95              WRITE     HEAD2                                     
+0018.00 C   95              EVAL      *IN95=*OFF                                
+0019.00 C                   READ      EMPREC                                    
+0020.00 C                   IF        DEPT<>TMPDEPT OR %EOF                     
+0021.00 C                   WRITE     SUM1                                      
+0022.00 C                   WRITE     SUM2                                      
+0023.00 C                   WRITE     SUM3                                      
+0024.00 C                   EVAL      GRNDTOT=TOTSAL                            
+0025.00 C                   EVAL      TMPDEPT=DEPT                              
+0026.00 C                   EVAL      TOTSAL=0                                  
+0027.00 C                   ELSE                                                
+0028.00 C                   IF        SALARY>MAXSAL                             
+0029.00 C                   EVAL      MAXSAL=SALARY                             
+0030.00 C                   ENDIF                                               
+0031.00 C                   ENDIF                                               
+0032.00 C                   IF        SALARY>GRNDMAX                            
+0033.00 C                   EVAL      GRNDMAX=SALARY                            
+0034.00 C                   ENDIF                                               
+0035.00 C                   ENDDO                                               
+0036.00 C                   WRITE     GRD1                                      
+0037.00 C                   WRITE     GRD2                                      
+0038.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data **************************************** 
+                                                                                
+                                                                                                                                                                    
