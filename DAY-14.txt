@@ -1,0 +1,134 @@
+									DAY-14
+
+1.Program to increment DATA AREA
+
+ Columns . . . :    1  71            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                               WITHDTARA 
+ FMT **  ...+... 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7  
+        *************** Beginning of data ************************************* 
+0001.00 PGM                                                                     
+0002.00    DCL VAR(&DTA) TYPE(*DEC) LEN(5 0)                                    
+0003.00    DCL VAR(&CHDTA) TYPE(*CHAR) LEN(5)                                   
+0004.00              RTVDTAARA  DTAARA(*CURLIB/MMDTA) RTNVAR(&DTA)              
+0005.00              CHGVAR VAR(&DTA) VALUE(&DTA + 1)                           
+0006.00              CHGDTAARA  DTAARA(*CURLIB/MMDTA) VALUE(&DTA)               
+0007.00              CHGVAR VAR(&CHDTA) VALUE(&DTA)                             
+0008.00    SNDPGMMSG MSG(&CHDTA)                                                
+0009.00 ENDPGM                                                                  
+        ****************** End of data **************************************** 
+
+2.Query builder using OVRBDF & OPNQRYF
+ Columns . . . :    1  71            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                 QRYBLDC 
+ FMT **  ...+... 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7  
+        *************** Beginning of data ************************************* 
+0001.00 PGM                                                                     
+0002.00              DCLF       FILE(*CURLIB/QRYBLDD)                           
+0003.00              DCL VAR(&QRY) TYPE(*CHAR) LEN(50)                          
+0004.00              DCL VAR(&ORDER) TYPE(*CHAR) LEN(8) VALUE('*ASCEND')        
+0005.00              OVRDBF     FILE(EMPMAIN) SHARE(*YES)                       
+0006.00              DOWHILE COND(&IN03='0')                                    
+0007.00              SNDRCVF RCDFMT(QRYENT)                                     
+0008.00              IF COND(&IN03='1') THEN(LEAVE)                             
+0009.00              IF COND(&IN04='1') THEN(DO)                                
+0010.00                CHGVAR VAR(&QRY) VALUE(&FLD *BCAT &OPR *BCAT &VAL)       
+0011.00                CHGVAR VAR(&ORDER) VALUE('*ASCEND')                      
+0012.00                IF COND(&ORD='D') THEN(CHGVAR VAR(&ORDER)     +          
+0013.00                VALUE('*DESCEND'))                                       
+0014.00              OPNQRYF    FILE((*CURLIB/EMPMAIN)) QRYSLT(&QRY) +          
+0015.00                           KEYFLD((&KEY &ORDER))                         
+0016.00              CALL       PGM(*CURLIB/EMPSFLR)                            
+0017.00              CLOF       OPNID(EMPMAIN)                                  
+0018.00              ENDDO                                                      
+0019.00              ENDDO                                                      
+0020.00 ENDPGM                                                                  
+        ****************** End of data **************************************** 
+                                                                                
+3. Exception Handling in division by zero  
+ Columns . . . :    1  71            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                   CALCC 
+ FMT **  ...+... 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7  
+        *************** Beginning of data ************************************* 
+0001.00 PGM                                                                     
+0002.00              DCLF       FILE(*CURLIB/CALCD)                             
+0003.00              DOWHILE COND(&IN53='0')                                    
+0004.00              SNDRCVF    RCDFMT(NUMENT)                                  
+0005.00              IF COND(&IN53='1') THEN(LEAVE)                             
+0006.00              IF         COND(&OPT = 'A') THEN(CHGVAR VAR(&C) +          
+0007.00                           VALUE(&A + &B))                               
+0008.00              IF         COND(&OPT = 'S') THEN(CHGVAR VAR(&C) +          
+0009.00                           VALUE(&A - &B))                               
+0010.00              IF         COND(&OPT = 'M') THEN(CHGVAR VAR(&C) +          
+0011.00                           VALUE(&A * &B))                               
+0012.00              IF         COND(&OPT = 'D') THEN(DO)                       
+0013.00                          CHGVAR VAR(&C) VALUE(&A / &B)                  
+0014.00              MONMSG     MSGID(MCH1211) EXEC(DO)                         
+0015.00              CHGVAR VAR(&MSG) VALUE('INVALID DIVISION BY ZERO')         
+0016.00              ITERATE                                                    
+0017.00              ENDDO                                                      
+0018.00              ENDDO                                                      
+0019.00              ENDDO                                                      
+0020.00 ENDPGM                                                                  
+        ****************** End of data **************************************** 
+
+4.Program to implement shared ODP                                                                                
+ Columns . . . :    1  71            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                CALLERCL 
+ FMT **  ...+... 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7  
+        *************** Beginning of data ************************************* 
+0001.00 PGM                                                                     
+0002.00              OVRDBF     FILE(EMPMAIN) SHARE(*YES)                       
+0003.00              CALL       PGM(TEN25LIB/CALLER1)                           
+0004.00              DLTOVR     FILE(EMPLOYEE)                                  
+0005.00 ENDPGM                                                                  
+        ****************** End of data **************************************** 
+
+5.Program where ODP is not shared   
+                                                                             
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                 CALLED1 
+ FMT FX FFilename++IPEASF.....L.....A.Device+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 FEMPMAIN   IF   E             DISK                                      
+0002.00 DRRN              S              3P 0 INZ(10)                           
+0003.00 C     RRN           CHAIN     EMPREC                                    
+0004.00 C     EMPID         DSPLY                                               
+0005.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data **************************************** 
+                                                                                
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                 CALLER1 
+ FMT FX FFilename++IPEASF.....L.....A.Device+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 FEMPMAIN   IF   E             DISK                                      
+0002.00 C                   READ      EMPREC                                    
+0003.00 C     EMPID         DSPLY                                               
+0004.00 C                   CALL      'CALLED1'                                 
+0005.00 C                   READ      EMPREC                                    
+0006.00 C     EMPID         DSPLY                                               
+0007.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data **************************************** 
+6.Voter eligibility using CLP                                                                                                                                                               
+ Columns . . . :    1  71            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                  VOTERC 
+ FMT **  ...+... 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7  
+        *************** Beginning of data ************************************* 
+0001.00 PGM                                                                     
+0002.00              DCLF       FILE(*CURLIB/VOTERD)                            
+0003.00              DOWHILE COND(&IN03 = '0')                                  
+0004.00              SNDRCVF    RCDFMT(VSCR)                                    
+0005.00              IF         COND(&IN03 = '1') THEN(LEAVE)                   
+0006.00              IF         COND(&AG >= 18 *AND &NA = 'INDIAN') +           
+0007.00                           THEN(CHGVAR VAR(&MSG) VALUE('YOU CAN VOTE'))  
+0008.00              IF         COND(&AG < 18 *OR &NA *NE 'INDIAN') +           
+0009.00                           THEN(CHGVAR VAR(&MSG) VALUE('CANNOT VOTE'))   
+0010.00              ENDDO                                                      
+0011.00 ENDPGM                                                                  
+        ****************** End of data **************************************** 
+                                                                                
+                                                                                                                                                                                                                                                                                                                                
+                                                                                
+
+
+                                                                                
+                                                                                                                                                                
