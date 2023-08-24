@@ -1,0 +1,123 @@
+1.Applying constraints primarykey,foreign key and check using sql
+
+1.CREATE TABLE TEN24LIB/SBANKMAST (MACNO DECIMAL (8 , 0) NOT NULL,    
+ACHOLDER CHARACTER (20 ) NOT NULL, ACTYPE CHARACTER (2 ) NOT NULL,  
+DTOPE DATE NOT NULL WITH DEFAULT, MSTBAL DECIMAL (12 , 2) NOT NULL  
+WITH DEFAULT, PRIMARY KEY (MACNO), CHECK (ACTYPE='SB' OR            
+ACTYPE='RD' OR ACTYPE='FD' )) 
+2.CREATE TABLE TEN25LIB/SBANKTRAN (TACNO DEC ( 8, 0) NOT NULL, SLIPNO 
+DEC ( 2, 0) NOT NULL, DTTRAN DATE NOT NULL, TRNTYPE CHAR ( 2) NOT   
+NULL, TRNMODE CHAR ( 3) NOT NULL WITH DEFAULT, TRNAMT DEC ( 12, 2)  
+NOT NULL, FOREIGN KEY (TACNO) REFERENCES TEN25LIB/SBANKMAST (MACNO) 
+ON DELETE NO ACTION ON UPDATE NO ACTION, UNIQUE (SLIPNO), CHECK     
+(TRNTYPE='CR' OR TRNTYPE='DR' ), CHECK (TRNMODE='CSH' OR            
+TRNMODE='CHQ' OR TRNMODE='TRF' ))  
+
+Constraint Violations                                 
+3.DELETE SBANKMAST WHERE MACNO=1                                      
+Delete prevented by referential constraint Q_TEN25LIB_SBANKTRAN_TACN
+4.UPDATE SBANKMAST SET MACNO=6 WHERE MACNO=2                          
+Update prevented by referential constraint Q_TEN25LIB_SBANKTRAN_TACN  
+5.UPDATE SBANKMAST SET MACNO=6 WHERE MACNO=43                       
+1 rows updated in SBANKMAST in TEN25LIB.                          
+6.UPDATE SBANKTRAN SET TACNO=7 WHERE TACNO=5                        
+Operation not allowed by referential constraint Q_TEN25LIB_SBANKTR
+7.UPDATE SBANKTRAN SET TRNTYPE='SB' WHERE TACNO=5                   
+INSERT, UPDATE, or MERGE not allowed by CHECK constraint.
+8.CREATE VIEW TEN25LIB/EMPVIEW1 AS SELECT * FROM TEN25LIB/EMPMAIN
+WHERE DEPT IN (10,20,30)                                        
+View EMPVIEW1 created in TEN25LIB.                              
+9.SELECT * FROM EMPVIEW1                                          
+SELECT statement run complete.                                  
+10.SELECT * FROM EMPVIEW1 ORDER BY SALARY                          
+SELECT statement run complete.            
+
+
+2..Deptartment wise employee selection with emded SQL.
+
+
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                 SQLQRYR 
+ FMT FX FFilename++IPEASF.....L.....A.Device+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 FSQLQRYD   CF   E             WORKSTN SFILE(SQLSFL:RRN)                 
+0002.00 DRRN              S              3P 0 INZ(*ZEROS)                       
+0003.00 C                   EVAL      *IN58=*ON                                 
+0004.00 C                   DOW       NOT *IN03                                 
+0005.00 C                   WRITE     FOOTER                                    
+0006.00 C                   EXFMT     SQLCTL                                    
+0006.01 C   03              LEAVE                                               
+0007.00 C                   EXSR      FILLSFL                                   
+0008.00 C                   ENDDO                                               
+0009.00 C                   EVAL      *INLR=*ON                                 
+0010.00 C     FILLSFL       BEGSR                                               
+0011.00 C                   EVAL      *IN59=*ON                                 
+0012.00 C                   WRITE     SQLCTL                                    
+0012.01 C                   EVAL      *IN59=*OFF                                
+0012.02 C                   EVAL      RRN=0                                     
+0013.00 C/EXEC SQL                                                              
+0014.00 C+ DECLARE DEPTCUR CURSOR FOR SELECT * FROM TEN25LIB/EMPMAIN WHERE
+0014.01 C+ DEPT=:QDEPT                                                     
+0015.00 C/END-EXEC                                                         
+0016.00 C/EXEC SQL                                                         
+0017.00 C+ OPEN DEPTCUR                                                    
+0018.00 C/END-EXEC                                                         
+0019.00 C                   DOW       SQLCODE=0                            
+0020.00 C/EXEC SQL                                                         
+0021.00 C+ FETCH NEXT FROM DEPTCUR INTO :EMPID, :NAME, :DEPT, :GENDER,     
+0021.01 C+ :DOJ, :SALARY                                                   
+0022.00 C/END-EXEC                                                         
+0023.00 C                   IF        SQLCODE=100  OR SQLCODE<0            
+0024.00 C                   LEAVE                                          
+0025.00 C                   ENDIF                                          
+0025.01 C                   SELECT                                         
+0025.02 C                   WHEN      SQLCODE=-181                         
+0025.03 C                   ITER                                           
+0025.04 C                   ENDSL                                          
+0025.03 C                   ITER                                           
+0025.04 C                   ENDSL                                          
+0026.00 C                   EVAL      RRN+=1                               
+0027.00 C                   WRITE     SQLSFL                               
+0028.00 C                   ENDDO                                          
+0029.00 C                   EVAL      *IN57=*OFF                           
+0030.00 C                   IF        RRN>0                                
+0031.00 C                   EVAL      *IN57=*ON                            
+0032.00 C                   ENDIF                                          
+0033.00 C/EXEC SQL                                                         
+0034.00 C+ CLOSE DEPTCUR                                                   
+0035.00 C/END-EXEC                                                            
+0036.00 C                   ENDSR                                             
+        ****************** End of data ***************************************
+
+3.Implementation of embed SQL in RPGLE to insert record to SBANKTRAN 
+
+
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                 SQLINSR 
+ FMT FX FFilename++IPEASF.....L.....A.Device+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 FSQLINSD   CF   E             WORKSTN                                   
+0002.00 DSQLSTMT          S            100A                                     
+0003.00 C                   DOW       NOT *IN03                                 
+0004.00 C                   EXFMT     ENTSCR                                    
+0005.00 C   03              LEAVE                                               
+0006.00 C                   IF        *IN04                                     
+0007.00 C/EXEC SQL                                                              
+0008.00 C+ INSERT INTO TEN25LIB/SBANKTRAN                                       
+0009.00 C+ VALUES(:TACNO,:SLIPNO,:DTTRAN,:TRNTYPE,:TRNMODE,:TRNAMT)             
+0010.00 C/END-EXEC                                                              
+0011.00 C                   CLEAR                   ENTSCR                      
+0011.01 C     SQLCODE       DSPLY                                               
+0011.02 C                   SELECT                                              
+0011.03 C                   WHEN      SQLCODE=-530                              
+0011.04 C                   EVAL      MSG='NO SUCH A/C NO IN MASTER'            
+0011.05 C                   WHEN      SQLCODE=-545                             
+0011.06 C                   EVAL      MSG='INVALID COLUMN VALUE'               
+0011.07 C                   ENDSL                                              
+0012.00 C                   ENDIF                                              
+0013.00 C                   IF        *IN12                                    
+0014.00 C                   CLEAR                   ENTSCR                     
+0015.00 C                   ENDIF                                              
+0016.00 C                   ENDDO                                              
+0017.00 C                   EVAL      *INLR=*ON                                
+        ****************** End of data ****************************************                                                                                                                                                 
