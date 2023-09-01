@@ -1,0 +1,191 @@
+1. Implemention for sorting of fields in subfile using embed sql and RTNCURLOC
+
+
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                               DYNASORTR 
+ FMT H  HKeywords++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0000.01 H* sorting and refilling sorted subfile on any field runtime            
+0000.02 H* user exits CTL screen on any field subfile is sorted that field      
+0000.03 H* used RTNCURLOC, PREPARE(SQL)                                         
+0000.04 HDFTACTGRP(*NO)                                                         
+0001.00 FDYNASORTD CF   E             WORKSTN SFILE(EMPSFL:SORTRRN)             
+0002.00 DSORTRRN          S              3P 0 INZ(*ZEROS)                       
+0003.00 DRefillData       PR                                                    
+0004.00 D                                1A                                     
+0005.00 DOrdch            S              1A   INZ('A')                          
+0006.00 C                   CALLP     RefillData(OrdcH)                         
+0007.00 C                   DOW       NOT *IN03                                 
+0008.00 C                   WRITE     FOOTER                                    
+0009.00 C                   EXFMT     EMPCTL                                    
+0009.01 C* When program cmes to next line,the exfmt blocks after receiving the  
+0009.02 C* usr inputs and goes to next line                                     
+0009.03 C* EXFMT is a comb of read and write ,it waits for users input,the      
+0009.04 C* program flow does not goes to next line,when a enter key or function 
+0009.05 C* key configured by CA or CF                                           
+0010.00 C   03              LEAVE                                               
+0010.01 C* FLD is 10A so fld will be A000000000, so using subst only first      
+0010.02 C* letter is taken                                                      
+0010.03 C                   EVAL      Ordch=%SUBST(FLD:1:1)                     
+0011.00 C                   CALLP     RefillData(Ordch)                         
+0012.00 C                   ENDDO                                               
+0013.00 C                   EVAL      *INLR=*ON                                 
+0014.00 PRefillData       B                                                     
+0015.00 DRefillData       PI                                                    
+0016.00 DOrdch                           1A                                     
+0016.01 DOrdFld           S             10A                                     
+0017.00 DSTMT             S            100A   INZ('SELECT * FROM TEN25LIB/')    
+0018.00 C                   EVAL      STMT=%TRIM(STMT)+'EMPMAIN ORDER BY '     
+0019.00 C                   SELECT                                              
+0020.00 C                   WHEN      Ordch='A'                                 
+0021.00 C 0023.00 C                   EVAL      OrdFld='NAME'                           
+0024.00 C                   WHEN      Ordch='C'                               
+0025.00 C                   EVAL      OrdFld='DEPT'                           
+0026.00 C                   WHEN      Ordch='D'                               
+0027.00 C                   EVAL      OrdFld='GENDER'                         
+0028.00 C                   WHEN      Ordch='E'                               
+0029.00 C                   EVAL      OrdFld='DOJ'                            
+0030.00 C                   WHEN      Ordch='F'                               
+0031.00 C                   EVAL      OrdFld='SALARY'                         
+0032.00 C                   OTHER                                             
+0033.00 C                   EVAL      OrdFld='EMPID'                          
+0034.00 C                   ENDSL                                             
+0034.01 C* clear subfile                                                      
+0035.00 C                   EVAL      *IN72=*OFF                              
+0036.00 C                   WRITE     EMPCTL                                  
+0037.00 C                   EVAL      SORTRRN=0                               
+0037.01 C                   EVAL      *IN72=*ON            
+0038.00 C* prepare sql statement dynamically         
+0039.00 C                   EVAL      STMT=%TRIM(STMT)+' '+%TRIM(OrdFld)       
+0040.00 C/EXEC SQL                                                             
+0041.00 C+ PREPARE S1 FROM :STMT                                               
+0042.00 C/END-EXEC                                                             
+0043.00 C/EXEC SQL                                                             
+0044.00 C+ DECLARE DYNACUR CURSOR FOR S1                                       
+0045.00 C/END-EXEC                                                             
+0046.00 C/EXEC SQL                                                             
+0047.00 C+ OPEN DYNACUR                                                  
+0048.00 C/END-EXEC                                                       
+0050.00 C                   DOW       SQLCODE=0                          
+0051.00 C/EXEC SQL                                                       
+0052.00 C+ FETCH DYNACUR INTO :EMPID, :NAME, :DEPT, :GENDER, :DOJ,       
+0053.00 C+ :SALARY                                                       
+0054.00 C/END-EXEC                                                       
+0055.00 C                   IF        SQLCODE=100 OR SQLCODE<0           
+0056.00 C                   LEAVE                                        
+0057.00 C                   ENDIF                                               
+0058.00 C                   EVAL      SORTRRN+=1                                
+0059.00 C                   WRITE     EMPSFL                                    
+0060.00 C                   ENDDO                                               
+0061.00 C                   EVAL      *IN71=*ON                                 
+0062.00 C                   IF        SORTRRN=0                                 
+0063.00 C                   EVAL      *IN71=*OFF                                
+0064.00 C                   ENDIF                                               
+0065.00 C/EXEC SQL                                                              
+0066.00 C+ CLOSE DYNACUR                                                        
+0067.00 C/END-EXEC                                                              
+0068.00 C                   RETURN                                              
+0069.00 PRefillData       E                                                     
+        ****************** End of data **************************************** 
+                                                                               
+                                                                                
+2.Write a program to generate xml using rpgle
+
+ Columns . . . :    1  71            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                STOREXML 
+ FMT PF .....A..........T.Name++++++RLen++TDpB......Functions++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00      A          R XMLREC                                                
+0002.00      A            XMLLINE       80A                                     
+        ****************** End of data **************************************** 
+                                                                                
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                               STOREXMLR 
+ FMT FX FFilename++IPEASF.....L.....A.Device+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0000.01 FEMPMAIN  IF   E           K DISK                                      
+0001.00 FSTOREXML  O    E             DISK                                      
+0002.00 DXLINE            S             80A                                     
+0003.00 C                   EVAL      XLINE='<EMPMAIN>'                        
+0004.00 C                   EVAL      XMLLINE=XLINE                             
+0005.00 C                   WRITE     XMLREC                                    
+0006.00 C     *LOVAL        SETLL     EREC                                      
+0007.00 C                   READ      EREC                                      
+0008.00 C                   DOW       NOT %EOF                                  
+0008.01 C                   EVAL      XMLLINE='<REC>'                           
+0008.02 C                   WRITE     XMLREC                                    
+0009.00 C                   EVAL      XMLLINE='<EMPID>'+%CHAR(EMPID)+'</EMPID>' 
+0009.01 C                   WRITE     XMLREC                                    
+0011.00 C                   EVAL      XMLLINE='<NAME>'+%TRIM(NAME)+'</NAME>'    
+0012.00 C                   WRITE     XMLREC                                    
+0013.00 C                   EVAL      XMLLINE='<DEPT>'+%CHAR(DEPT)+'</DEPT>'    
+0014.00 C                   WRITE     XMLREC                                    
+0015.00 C                   EVAL      XMLLINE='<SALARY>'+%CHAR(SALARY)+'</SALAR 
+0016.00 C                   WRITE     XMLREC                                    
+0027.01 C                   EVAL      XMLLINE='</REC>'                          
+0027.02 C                   WRITE     XMLREC                                    
+0027.03 C                   READ      EMPREC                                      
+0027.04 C                   ENDDO                                               
+0028.00 C                   EVAL      XMLLINE='</EMPMAIN>'                     
+0029.00 C                   WRITE     XMLREC                                    
+       ****************** End of data **************************************** 
+3. Write a program to generate record format of any file using RPGLE
+
+
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                              DSPRCDFMTR 
+ FMT H  HKeywords++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0000.01 H* TO display record format of a given PF/LF                            
+0000.02 H* the rcd fmt is displayed in subfile                                  
+0000.03 H* program uses DSPFFD *OUTFILE AND reads generated PF to fill sfl      
+0000.04 HDFTACTGRP(*NO)                                                         
+0001.00 FEMPDSPFFD IF   E             DISK    USROPN                            
+0002.00 FDSPRCDFMTDCF   E             WORKSTN SFILE(RCDFMTSFL:RRN)              
+0003.00 DRRN              S              3P 0 INZ(0)                            
+0004.00 DCMD              S             20A   INZ('DSPFFD FILE(*CURLIB/')       
+0004.01 DFILLSFL          PR                                                    
+0004.02 D                               10A                                     
+0004.03 C                   EVAL      *IN72=*ON                                 
+0005.00 C                   DOW       *IN03=*OFF                                
+0006.00 C                   WRITE     FOOTER                                    
+0007.00 C                   EXFMT     RCDFMTCTL                                 
+0008.00 C   03              LEAVE                                               
+0008.01 C* Call subprocedure - procedure does not return value we use CALLP     
+0009.00 C                   CALLP     FILLSFL(FNAME)                            
+0010.00 C                   ENDDO                                               
+0011.00 C                   EVAL      *INLR=*ON                                 
+0012.00 PFILLSFL          B                                                     
+0013.00 DFILLSFL          PI                                                    
+0013.01 D* Incoming parameter                                                   
+0014.00 DFN                             10A                                     
+0014.01 DCMDTXT           S             80A                                     
+0014.02 D* Length of len is 15 5 only                                           
+0014.03 DLEN              S             15P 5 INZ(80)                           
+0015.00 C                   EVAL      CMDTXT=CMD+%TRIM(FN)+') OUTPUT(*OUTFILE)  
+0016.00 C                             ' OUTFILE(*CURLIB/EMPDSPFFD) '            
+0017.00 C                   CALL      'QCMDEXC'                                 
+0018.00 C                   PARM                    CMDTXT                      
+0019.00 C                   PARM                    LEN                         
+0019.01 C* Empdspffd if filled now and it is opening after getting filled       
+0020.00 C                   OPEN      EMPDSPFFD                                 
+0021.00 C                   EVAL      *IN72=*OFF                                
+0022.00 C                   EVAL      RRN=0                                     
+0023.00 C                   WRITE     RCDFMTCTL                                 
+0024.00 C                   READ      EMPDSPFFD                                 
+0025.00 C                   DOW       NOT %EOF                                  
+0026.00 C                   EVAL      RRN=RRN+1                                 
+0026.01 C                   WRITE     RCDFMTSFL                                 
+0027.00 C                   READ      EMPDSPFFD                                 
+0028.00 C                   ENDDO                                               
+0029.00 C                   EVAL      *IN72=*ON                                 
+0030.00 C                   EVAL      *IN71=*ON                                 
+0031.00 C                   IF        RRN>1                                     
+0031.01 C                   EVAL      *IN71=*ON                                 
+0031.02 C                   ENDIF                                               
+0031.04 C                   CLOSE     EMPDSPFFD                                 
+0031.05 C                   RETURN                                              
+0032.00 PFILLSFL          E                                                     
+        ****************** End of data **************************************** 
+                                                                                
+                                                                                
