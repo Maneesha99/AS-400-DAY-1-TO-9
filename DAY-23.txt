@@ -1,0 +1,66 @@
+1. PARTIAL FREE FORMAT FOR QUERY SUBFILE
+
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                                 DPTQRYR 
+ FMT H  HKeywords++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0000.01 HDFTACTGRP(*NO)                                                         
+0001.00 FEMPLFIF   E           K DISK                                      
+0002.00 FDEPTQRYD  CF   E             WORKSTN SFILE(QRYSFL:RRN)                 
+0003.00 DRRN              S              3P 0                                   
+0003.01 DgetQueryResult   pr                                                    
+0003.02 D                                2p 0                                   
+0004.00 C/FREE                                                                  
+0005.00                 *IN58=*ON;                                              
+0006.00                 DOW *IN03=*OFF;                                         
+0007.00                        WRITE FOOTER;                                    
+0008.00                        EXFMT QRYCTL;                                    
+0008.01                         if *in03;                                       
+0008.02                            leave;                                       
+0008.03                         endif;                                          
+0009.00                          getQueryResult(qdept); // procedure call       
+0010.00                 enddo;                                                  
+0011.00                        *inlr=*on;                                      
+0011.01  /END-FREE                                                             
+0012.00 PgetQueryResult   b                                                    
+0013.00 DgetQueryResult   PI                                                   
+0014.00 Ddpt                             2P 0                                  
+0015.00 C/FREE                                                                 
+0016.00                   //clear sufile...& initialize rrn                    
+0017.00                   *in59=*on;                                           
+0018.00                   write qryctl;                                        
+0019.00                   rrn=0;                                               
+0020.00                   *in59=*off;                                          
+0021.00                      setll dpt emprec; //position rec-ptr to the         
+0022.00                                      // 1st of key val                 
+0023.00                      reade dpt emprec;                                   
+0024.00                      dow not %eof;                                     
+0025.00                          rrn+=1;                                       
+0026.00                          write qrysfl;                                 
+0027.00                          reade dpt emprec;                               
+0028.00                      enddo;                                  
+0029.00                      *in57=*on;                                         
+0030.00                      if rrn=0;                                          
+0031.00                         *in57=*off;                                     
+0032.00                         msg='No such Dept or has no Employee';          
+0033.00                      endif;                                             
+0033.01  /END-FREE                                                              
+0035.00 PgetQueryResult   E                                                     
+        ****************** End of data **************************************** 
+
+
+3. PARTIAL FREE FORMAT PROGRAM TO DISPLY NAME 
+
+
+ Columns . . . :    6  76            Edit                      TEN25LIB/TRNGSRC 
+ SEU==>                                                              PARTFREE1R 
+ FMT FX FFilename++IPEASF.....L.....A.Device+.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 FEMPMAIN  IF   E           K DISK                                      
+0002.00 C/FREE                                                                  
+0003.00             SETLL *LOVAL EMPREC;                                          
+0004.00             READ EMPREC;                                                  
+0005.00             DSPLY NAME;                                                 
+0006.00             *INLR=*ON;                                                  
+0007.00  /END-FREE                                                              
+        ****************** End of data **************************************** 
