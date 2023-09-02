@@ -1,0 +1,225 @@
+1. Write a program to learn about the declarative functions of free format RPGLE
+
+
+
+ Columns . . . :    6  76            Edit                          MAN251/MMSRC 
+ SEU==>                                                                   DCLSR 
+ FMT *   *. 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7 ...+. 
+        *************** Beginning of data ************************************* 
+0001.00 ** FREE                                                                 
+0002.00       DCL-S A   CHAR(20) INZ('ONAM WISHES');                            
+0003.00       DCL-S B   PACKED(7:2) INZ(12345.67);                              
+0004.00       DCL-S C   ZONED(5:2) INZ(123.45);                                 
+0005.00       DCL-S D   PACKED(7:2) INZ(*ZEROS);                                
+0006.00          D = B + C;                                                     
+0007.00          DSPLY D;                                                       
+0008.00          DSPLY A;                                                       
+0009.00          *INLR=*ON;                                                     
+        ****************** End of data **************************************** 
+
+2.Write a program to generate XML of a PF using SQLRPGLE.
+
+
+
+ Columns . . . :    6  76            Edit                     	   MAN251/MMSRC
+ SEU==>                                                              GENXMLIFSR 
+ FMT D  DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords+++++++++++++++++++++++++ 
+        *************** Beginning of data ************************************* 
+0001.00 DID               S              6P 0                                   
+0002.00 DNM               S             20A                                     
+0003.00 DDP               S              2P 0                                   
+0004.00 DGEN              S              1A                                     
+0005.00 DSAL              S              8P 2                                   
+0006.00 DXMLLINE          S             40A                                     
+0007.00 DPATH             S             24A   INZ('/HOME/ONAMK/USTEMPXML')      
+0008.00 C/EXEC SQL                                                              
+0009.00 C+ DECLARE C1 CURSOR FOR SELECT * FROM USTEMP                           
+0010.00 C/END-EXEC                                                              
+0011.00 C/EXEC SQL                                                              
+0012.00 C+ OPEN C1                                                              
+0013.00 C/END-EXEC                                                              
+0014.00 C/EXEC SQL                                                              
+0015.00 C+ CALL QSYS2/IFS_WRITE_UTF8(:PATH,'<EMP>',END_OF_LINE=>'CRLF')         
+0016.00 C/END-EXEC                                                              
+0017.00 C                   DOW       SQLCODE>=0                          
+0018.00 C/EXEC SQL                                                              
+0019.00 C+ FETCH NEXT FROM C1 INTO :ID, :NM, :DP, :GEN, :SAL                    
+0020.00 C/END-EXEC                                                              
+0021.00 C                   IF        SQLCODE<0 OR SQLCODE=100                  
+0022.00 C                   LEAVE                                               
+0023.00 C                   ENDIF                                               
+0024.00 C*                                                                      
+0025.00 C/EXEC SQL                                                              
+0026.00 C+ CALL QSYS2/IFS_WRITE_UTF8(:PATH,'<REC>',END_OF_LINE=>'CRLF')         
+0027.00 C/END-EXEC                                                              
+0028.00 C                   EVAL      XMLLINE='<EMPID>'+%CHAR(ID)+'</EMPID>'    
+0029.00 C/EXEC SQL                                                              
+0030.00 C+ CALL QSYS2/IFS_WRITE_UTF8 (:PATH,:XMLLINE, END_OF_LINE=>'CRLF')      
+0031.00 C/END-EXEC                                                              
+0032.00 C*                                                                      
+0033.00 C                   EVAL      XMLLINE='<NAME>'+%TRIM(NM)+'</NAME>'      
+0034.00 C/EXEC SQL                                                              
+0035.00 C+ CALL QSYS2/IFS_WRITE_UTF8 (:PATH,:XMLLINE, END_OF_LINE=>'CRLF')  
+0036.00 C/END-EXEC                                                              
+0037.00 C                   EVAL      XMLLINE='<DEPT>'+%CHAR(DP)+'</DEPT>'      
+0038.00 C/EXEC SQL                                                              
+0039.00 C+ CALL QSYS2/IFS_WRITE_UTF8 (:PATH,:XMLLINE, END_OF_LINE=>'CRLF')      
+0040.00 C/END-EXEC                                                              
+0041.00 C                   EVAL      XMLLINE='<GENDER>'+%TRIM(GEN)+'</GENDER>' 
+0042.00 C/EXEC SQL                                                              
+0043.00 C+ CALL QSYS2/IFS_WRITE_UTF8 (:PATH,:XMLLINE, END_OF_LINE=>'CRLF')      
+0044.00 C/END-EXEC                                                              
+0045.00 C                   EVAL      XMLLINE='<SALARY>'+%CHAR(SAL)+'</SALARY>' 
+0046.00 C/EXEC SQL                                                              
+0047.00 C+ CALL QSYS2/IFS_WRITE_UTF8 (:PATH,:XMLLINE, END_OF_LINE=>'CRLF')      
+0048.00 C/END-EXEC                                                              
+0049.00 C/EXEC SQL                                                              
+0050.00 C+ CALL QSYS2/IFS_WRITE_UTF8(:PATH,'</REC>',END_OF_LINE=>'CRLF')        
+0051.00 C/END-EXEC                                                              
+0052.00 C                   ENDDO                                               
+0053.00 C/EXEC SQ0054.00 C+ CALL QSYS2/IFS_WRITE_UTF8(:PATH,'</EMP>',END_OF_LINE=>'CRLF')        
+0055.00 C/END-EXEC                                                              
+0056.00 C/EXEC SQL                                                              
+0057.00 C+ CLOSE C1                                                             
+0058.00 C/END-EXEC                                                              
+0059.00 C                   EVAL      *INLR=*ON                                 
+        ****************** End of data **************************************** 
+3. Write a program to generate XML using free format RPGLE
+
+
+
+ Columns . . . :    6  76            Edit                     	   MAN251/MMSRC 
+ SEU==>                                                               PFTOXMLFR 
+ FMT *   *. 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7 ...+. 
+        *************** Beginning of data ************************************* 
+0001.00 ** FREE                                                                 
+0002.00    dcl-s XmlData sqltype(xml_clob:3000) ccsid(37) ;                     
+0003.00    dcl-s Outfile sqltype(clob_file) ;                                   
+0004.00    dcl-s Data sqltype(clob:1000000) ccsid(*utf8) ;                      
+0005.00    dcl-s Changed varchar(3000) ;                                        
+0006.00    dcl-s Path varchar(100) inz('/HOME/ONAMK/xmlFile.xml');              
+0007.00    exec sql SET OPTION COMMIT=*NONE,CLOSQLCSR=*ENDMOD;                  
+0008.00    exec sql VALUES(SELECT XMLGROUP((EMPID)AS "EMPI-ID",                 
+0009.00                              RTRIM(ENAME) AS "NAME",                    
+0010.00                              (DEPT) AS "DEPT",                          
+0011.00                              RTRIM(GENDER) AS "GENDER",                 
+0012.00                              (SALARY) AS "SALARY"                       
+0013.00                        OPTION ROW "REC" ROOT "EMP")                     
+0014.00                         FROM MAN251/USTEMP)                         
+0015.00             INTO :XmlData ;                                             
+0016.00             dsply sqlcode;                                              
+0017.00         clear Outfile;                 
+0018.00         Outfile_Name = %trimr(Path) ;                                   
+0019.00         Outfile_NL = %len(%trimr(Outfile_Name)) ;                       
+0020.00         Outfile_FO = SQFCRT ;                                           
+0021.00         Changed = XmlData_Data ;                                        
+0022.00         Data_Data = %scanrpl('IBM037':'UTF-8':Changed) ;                
+0023.00         Data_Len = %len(%trimr(Data_Data)) ;                            
+0024.00         exec sql SET :Outfile = :Data ;                                 
+0025.00         *inlr = *on ;                                                   
+        ****************** End of data **************************************** 
+
+4.Write a program to read all records of ustemp file to a subfile using free format	
+RPGLE
+
+
+ Columns . . . :    6  76            Edit                          MAN251/MMSRC 
+ SEU==>                                                                 USTQRYR 
+ FMT *   *. 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7 ...+. 
+        *************** Beginning of data ************************************* 
+0001.00 ** FREE                                                                 
+0002.00        CTL-OPT datfmt(*eur);                                            
+0003.00        dcl-f USTEMP disk usage(*input) rename(ustemp:emprec);           
+0004.00        dcl-f USTQRYD1 workstn sfile(empsfl:rrn);                        
+0005.00        dcl-s rrn packed(3:0) inz(*zeros);                               
+0006.00                   *in72=*off;//  SFLCLR                                 
+0007.00                   Write EMPCTL;                                         
+0008.00                      //setll *loval ustemp;                             
+0009.00                        // note:the file is created thru SQL             
+0010.00                       //  so it does not have rcdfmt ..Filename is used 
+0011.00                      read emprec;                                       
+0012.00                       dow not %eof(ustemp);                             
+0013.00                           rrn+=1;                                       
+0014.00                           write empsfl;                                 
+0015.00                           read emprec;                                  
+0016.00                       enddo;                                            
+0017.00                   *in71=*on;                                           
+0018.00                   *in72=*on;                                           
+0019.00                   exfmt empctl;                                        
+0020.00                      *inlr=*on;                                        
+        ****************** End of data ****************************************
+
+5. Write a program to add numbers using sub procedure in free format RPGLE
+
+
+ Columns . . . :    6  76            Edit                          MAN251/MMSRC 
+ SEU==>                                                              WITHPROCLR 
+ FMT *   *. 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7 ...+. 
+        *************** Beginning of data ************************************* 
+0001.00 ** FREE                                                                 
+0002.00        CTL-OPT DFTACTGRP(*NO);                                          
+0003.00        DCL-C CNS  CONST('the sum:');   //define named const             
+0004.00        DCL-PR getSum packed (7:2);                                      
+0005.00            *n packed(7:2) const;  //can pass const to param as value    
+0006.00            *n zoned(3:1) const;                                         
+0007.00            *n int(5:0) const;                                           
+0008.00        end-pr;                                                          
+0009.00        dcl-s result packed(7:2) inz(*zeros);                            
+0010.00            result=getSum(12.5:15.3:5);// constants passed               
+0011.00            dsply result;                                                
+0012.00            *inlr=*on;                                                   
+0013.00       dcl-proc getSum; //like ippr b                                    
+0014.00        dcl-pi *N  packed(7:2);                                          
+0015.00            a packed(7:2) const;                                         
+0016.00            b zoned(3:1) const;                                          
+0017.00            c int(5:0) const;                                            
+0018.00        end-pi; //not end of procedure                                   
+0019.00        dcl-s z packed(7:2);                                             
+0020.00            z=a+b+c;                                                     
+0021.00            return z;                                                    
+0022.00    end-proc;                                                            
+        ****************** End of data **************************************** 
+
+6. Write a program to get the longest name from array using sub procedure in free	
+format RPGLE
+
+
+ Columns . . . :    6  76            Edit                          MAN251/MMSRC 
+ SEU==>                                                              WITHPROC2R 
+ FMT ** ... 1 ...+... 2 ...+... 3 ...+... 4 ...+... 5 ...+... 6 ...+... 7 ...+. 
+        *************** Beginning of data ************************************* 
+0001.00 //passing array to the sub procedure to get the longest name from array 
+0002.00 ** FREE                                                                 
+0003.00        CTL-OPT DFTACTGRP(*NO);                                          
+0004.00    dcl-pr getLongest char(20);                                          
+0005.00           *n char(20) dim(5);                                           
+0006.00    end-pr;                                                              
+0007.00       dcl-s ary char(20) dim(5);                                        
+0008.00       dcl-s name char(20);                                              
+0009.00           ary(1)='A';                                                   
+0010.00           ary(2)='ABC';                                                 
+0011.00           ary(3)='AB';                                                  
+0012.00           ary(4)='ABcd';                                                
+0013.00           ary(5)='b';                                                   
+0014.00           name=getLongest(ary);                                         
+0015.00           dsply name;                                                   
+0016.00           *inlr=*on;                                                    
+0017.00      dcl-proc getLongest;                                           
+0018.00         dcl-pi *N char(20);                                         
+0019.00         names char(20) dim(5);                                      
+0020.00         end-pi;                                                     
+0021.00         dcl-s longest char(20);                                     
+0022.00         dcl-s x packed(2:0) inz(2);                                 
+0023.00            longest=names(1);                                        
+0024.00            dow x<5;                                                 
+0025.00                if %len(%trim(names(x)))> %len(%trim(longest));      
+0026.00                   longest=names(x);                                     
+0027.00                endif;                                                   
+0028.00                x+=1;                                                    
+0029.00            enddo;                                                       
+0030.00            return longest;                                              
+0031.00        end-proc;                                                        
+        ****************** End of data **************************************** 
+                                                                                
+
+                                                              
